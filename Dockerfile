@@ -1,22 +1,25 @@
-FROM node:20-alpine AS development-dependencies-env
-COPY . /app
-WORKDIR /app
-RUN npm ci
+# =========================================
+# Stage 1: Develop the React.js Application
+# =========================================
+ARG NODE_VERSION=22.19.0
 
-FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
+# Use a lightweight Node.js image for development
+FROM node:${NODE_VERSION} AS dev
 
-FROM node:20-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
+# Set the working directory inside the container
 WORKDIR /app
-RUN npm run build
 
-FROM node:20-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
-CMD ["npm", "run", "start"]
+# Copy package-related files first to leverage Docker's caching mechanism
+COPY package.json package-lock.json* ./
+
+# Install project dependencies
+RUN --mount=type=cache,target=/root/.npm npm install
+
+# Copy the rest of the application source code into the container
+COPY . .
+
+# Expose the port used by the Vite development server
+EXPOSE 5173
+
+# Run dev server on all interfaces so host machine can access the container
+CMD ["npm", "run", "dev"]
