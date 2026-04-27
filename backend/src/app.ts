@@ -3,6 +3,7 @@ import type {Request, Response} from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import user_router from './routes/user.routes';
+import auth_router from './routes/auth.routes';
 
 dotenv.config();
 
@@ -18,8 +19,8 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript 서버 실행 중');
 });
 
-app.use('/users', user_router);
-
+app.use('/api/users', user_router);
+app.use('/api/auth', auth_router);
 
 // 서버 실행
 app.listen(PORT, () => {

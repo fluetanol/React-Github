@@ -28,7 +28,7 @@ const handleOAuthLogin = (ID: string, URL: string) => {
 
   const params = new URLSearchParams( {
     ...githubOAuthParams,
-    scope : githubOAuthParams.scope.join(' '), // scope는 공백으로 구분된 문자열로 전달해야 함
+    scope : githubOAuthParams.scope.join(' '), 
   } );
   window.location.href = `${baseURL}?${params.toString()}`;
 
