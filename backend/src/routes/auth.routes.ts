@@ -2,13 +2,21 @@ import Routes from 'express';
 
 const auth_router = Routes();
 
+auth_router.get('/',(req, res)=>{
+    res.json({ message: 'Auth route is working' });
+})
+
+
 //http:localhost:3030/api/auth/github
 auth_router.post('/github', async (req, res)=>{
-    res.json({ message: 'GitHub authentication endpoint' });
+    
+    //Express는 응답을 한번만 보낼 수 있음. 조심하셈
+    //res.json({ message: 'GitHub authentication endpoint' });
      
     const { code }  = req.body;
     
     try{
+        // Github에 엑세스 토큰 요청
         const response = await fetch('https://github.com/login/oauth/access_token',
             {
                 method : 'POST',
@@ -27,6 +35,8 @@ auth_router.post('/github', async (req, res)=>{
         if(response.ok){
             const data =await response.json();
             const accessToken = data.access_token;
+
+            // Github API를 사용하여 사용자 정보 요청
             const userResponse = await fetch('https://api.github.com/user',
                 {
                     headers : {
@@ -37,10 +47,18 @@ auth_router.post('/github', async (req, res)=>{
 
             const userData = await userResponse.json();
 
+            const appToken = 'dummy-app-token';
+            /*
+            const myAppToken = jwt.sign(
+            { userId: userResponse.data.id, email: userResponse.data.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+            );*/
+
             res.json({
                 success :true,
                 user : userData,
-                token : accessToken
+                token : appToken
             })
         }
 
