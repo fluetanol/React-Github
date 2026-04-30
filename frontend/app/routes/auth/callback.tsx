@@ -9,6 +9,7 @@ export default function Callback() {
     // 인증 코드가 전달됨
     const code = searchParams.get('code');
     console.log("Received code:", code);
+
     useEffect(()=>{
         const authenticate = async()=>{
             // error
@@ -19,7 +20,9 @@ export default function Callback() {
             }
 
             try{
-                const response = await fetch('http:localhost:3030/api/auth/github', {
+                // 백엔드에 인증 코드 보내서 서버 액세스 토큰 받아오기
+                // 참고로 http:// 로 //를 다 써줘야 절대 경로로 인식됨
+                const response = await fetch('http://localhost:3000/api/auth/github', {
                     method : 'POST',
                     headers : {
                         'Content-Type' : 'application/json'
@@ -29,8 +32,10 @@ export default function Callback() {
 
                 if(response.ok){
                     const data = await response.json();
-                    const { token } = data;
-                    localStorage.setItem('github_token', token);
+                    //access token을 httponly 쿠키로 전환할 예정
+                    // const { token } = data;
+                    // localStorage.setItem('github_token', token);
+                    console.log("인증 성공", data);
                     navigate('/dashboard');
                 }
                 else{

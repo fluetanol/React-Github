@@ -1,4 +1,4 @@
-import Routes from 'express';
+import Routes, { CookieOptions } from 'express';
 import jwt from 'jsonwebtoken';
 
 const auth_router = Routes();
@@ -34,12 +34,10 @@ auth_router.post('/github', async (req, res)=>{
 
         if(response.ok){
             const data =await response.json();
-
             console.log("Github access token response:", data);
 
-            const accessToken = data.access_token;
-
             // Github API를 사용하여 사용자 정보 요청
+            const accessToken = data.access_token;
             const userResponse = await fetch('https://api.github.com/user',
                 {
                     headers : {
@@ -63,10 +61,23 @@ auth_router.post('/github', async (req, res)=>{
                 { expiresIn : '1h' }        //options
             );
 
+            const cookieOptions : CookieOptions ={
+                httpOnly : true,        //http only 활성화
+                secure : false,         //https에서만 쿠키 전송, 다만 개발환경에서는 false로 설정
+                sameSite : 'strict',    //CSRF 공격 방지
+                maxAge : 3600000, //1시간
+            }
+
+            //sameSite 옵션
+            // - 'strict' : 엄격한 sameSite 정책, 타 사이트에서 쿠키 전송 불가
+            // - 'lax' : 타 사이트에서 쿠키 전송 허용, 단 GET 요청에 한함
+            // - 'none' : 모든 상황에서 쿠키 전송 허용, 단 secure 옵션도 true로 설정해야 함 (브라우저 강제 사항)
+
+            res.cookie('app_token', appToken, cookieOptions);
+
             res.json({
                 success :true,
                 user : userData,
-                token : appToken
             })
         }
 
