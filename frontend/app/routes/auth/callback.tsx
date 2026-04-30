@@ -53,6 +53,6 @@ export default function Callback() {
 
         authenticate();
 
-    })
+    },[])
 
 }
