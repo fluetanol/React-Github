@@ -10,6 +10,11 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 
+
+/**
+ * 글로벌 스타일과 폰트를 설정하는 링크를 반환하는 함수입니다.
+ * @returns 
+ */
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -23,6 +28,11 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+/**
+ * 전역 레이아웃 컴포넌트입니다.
+ * @param param0 
+ * @returns 
+ */
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -41,10 +51,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+//Outlet은 현재 라우트의 자식 라우트를 렌더링하는 컴포넌트.
+//루트 레벨에서는 자식 라우트를 렌더링하기 위해 Outlet을 사용함.
 export default function App() {
   return <Outlet />;
 }
 
+/**
+ * 루트 레벨에서의 에러를 처리하는 컴포넌트입니다.
+ * @param param0 
+ * @returns 
+ */
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";

@@ -1,0 +1,16 @@
+ARG NODE_VERSION=22.19.0
+
+FROM node:${NODE_VERSION} AS dev
+
+WORKDIR /src
+
+COPY package.json package-lock.json* ./
+
+# Install project dependencies
+RUN --mount=type=cache,target=/root/.npm npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

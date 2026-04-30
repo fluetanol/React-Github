@@ -12,4 +12,5 @@ body {
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+  padding : 12px;
 }
