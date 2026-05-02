@@ -1,17 +1,58 @@
-import Routes, { CookieOptions } from 'express';
+import Routes, { CookieOptions, Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const auth_router = Routes();
+const auth_router = Router();
 
-auth_router.get('/',(req, res)=>{
-    res.json({ message: 'Auth route is working' });
+// api/auth
+auth_router.get('/', (req, res)=>{
+    res.json({ message: 'Auth route is working!' });
 })
 
 
-//http:localhost:3030/api/auth/github
+
+//  api/auth/check
+auth_router.get('/check', async(req, res)=>{
+    
+    console.log("Received request to check authentication status");
+
+    const token = req.cookies.app_token;
+
+    if(!token){
+        return res.status(401).json({ error : '인증 토큰이 없습니다.' });
+    }
+
+    try{
+        //토큰 디코딩
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+
+        //디코딩된 토큰에서 사용자 정보 추출
+        const { userId, githubId } = decoded as { userId : number, githubId : number };
+        //DB에서 사용자 정보 조회
+        const user = await prisma.user.findUnique({
+            where : {
+                id : userId,
+                githubId : githubId,
+            }
+        });
+
+        if(!user){
+            return res.status(404).json({ error : '사용자를 찾을 수 없습니다.' });
+        }
+       
+        res.status(200).json({
+            success : true
+        })
+
+    }catch(error){
+        console.error("Error : Token verification error", error);
+        return res.status(401).json({ error : '유효하지 않은 토큰입니다.' });
+    }
+})
+
+// api/auth/github
 auth_router.post('/github', async (req, res)=>{
     //Express는 응답을 한번만 보낼 수 있음. 조심하셈
     //res.json({ message: 'GitHub authentication endpoint' });
@@ -123,13 +164,13 @@ auth_router.post('/github', async (req, res)=>{
     }
     catch(error){
         console.log("Error : Github authentication error", error);
-         res.status(500).json({error : '인증 실패'});   
+        res.status(500).json({error : '인증 실패'});   
     }
 } )
 
 
 auth_router.use((req, res) =>{
-    res.status(404).json({ error: 'Not Found' });
+    res.status(404).json({ error: 'Not Found zzz' });
 })
 
 export default auth_router;
