@@ -10,7 +10,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin : 'http://localhost:5173', //프론트엔드 주소
+  credentials : true, //쿠키를 포함하여 요청을 보냄
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 
