@@ -8,7 +8,7 @@
     "start": "node dist/app.js",
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/app.ts",
-    "dev-kill" : "npx kill-port 3000"
+    "dev-kill": "npx kill-port 3000"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
