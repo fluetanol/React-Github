@@ -2,6 +2,7 @@ import { redirect } from "react-router";
 import type { Route } from "./+types/home";
 import { Github } from "~/icons/Github";
 import type { StrictGithubOAuthParams } from "~/type/GithubOAuth";
+import { useEffect, useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -34,26 +35,83 @@ const handleOAuthLogin = (ID: string, URL: string) => {
 
 };
 
+type CommonResponse = { success : boolean;} | { error : string; }
+
 export default function Home() {
+  const [loginCheckState, setLoginCheckState] = useState(false);
   const ID =  import.meta.env.VITE_GITHUB_CLIENT_ID;
   const URL = import.meta.env.VITE_GITHUB_CALLBACK_URL;
   console.log("ID, URL " ,ID, URL);
 
+
+
+  useEffect(()=>{
+    const checkRoute = async()=>{
+      try{
+        const res = await fetch('http://localhost:3000/api/auth',{
+           method : 'GET',
+         })
+        
+         if(res.ok){
+            const data = await res.json();
+            setLoginCheckState(true);
+            console.log("Auth route response:", data);
+         }
+        
+      }catch(error){
+        console.error("Error : Auth route check error", error);
+      }
+    }
+
+    checkRoute();
+
+    const checkLogin = async ()=>{
+      try{
+         const res = await fetch('http://localhost:3000/api/auth/check',{
+            method : 'GET',
+            credentials : 'include' // 쿠키를 포함하여 요청을 보냄
+         })
+
+         if(res.ok){
+            const data : CommonResponse = await res.json();
+            setLoginCheckState(true);
+            console.log("Login check response:", data);
+         }
+      }
+      catch(error : unknown){
+        console.error("Error : Token verification error", error);
+      }
+    } 
+
+    //checkLogin();
+
+  }, [])
+ 
+
+
   return <>
-  <div className = "flex flex-col items-center justify-center h-screen gap-4">
-    <span className = "text-4xl font-semibold">GitHub dashBoard</span>
-    <button 
-      className = {`border p-1 rounded-full 
-        hover:cursor-pointer hover:bg-gray-300 
-        transition-colors duration-150`}
-      onClick={()=>{
-        handleOAuthLogin(ID, URL);
-    }}>
-      <Github 
-        width={50}
-        height={50}
-      />
-    </button>
-  </div>
-  </>;
+    {loginCheckState ? (
+      <div className = "flex flex-col items-center justify-center h-screen gap-4">
+        <span className = "text-4xl font-semibold">GitHub dashBoard</span>
+        <button 
+          className = {`border p-1 rounded-full 
+            hover:cursor-pointer hover:bg-gray-300 
+            transition-colors duration-150`}
+          onClick={()=>{
+            handleOAuthLogin(ID, URL);
+        }}>
+          <Github 
+            width={50}
+            height={50}
+          />
+        </button>
+      </div>
+    ): 
+      <div className = "flex justify-center items-center h-screen">
+        <h1>로딩 중...</h1>
+      </div>
+    }
+
+
+    </>;
 }
