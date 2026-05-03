@@ -19,6 +19,7 @@ auth_router.get('/check', async(req, res)=>{
     console.log("Received request to check authentication status");
 
     const token = req.cookies.app_token;
+    console.log("Received token from cookies:", req.cookies);
 
     if(!token){
         return res.status(401).json({ error : '인증 토큰이 없습니다.' });
