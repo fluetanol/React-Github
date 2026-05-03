@@ -44,7 +44,7 @@ export default function Home() {
   const navigate = useNavigate();
   console.log("ID, URL " ,ID, URL);
 
-  
+
   useEffect(()=>{
     const checkRoute = async()=>{
       try{
@@ -77,6 +77,9 @@ export default function Home() {
             if('success' in data && data.success){
               navigate('/dashboard');
             }
+         }
+         else{
+              throw new Error("Unauthorized");
          }
       }
       catch(error : unknown){
