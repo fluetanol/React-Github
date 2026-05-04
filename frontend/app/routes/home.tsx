@@ -1,7 +1,7 @@
 import { redirect, useNavigate } from "react-router";
 import type { Route } from "./+types/home";
 import { Github } from "~/icons/Github";
-import type { StrictGithubOAuthParams } from "~/type/GithubOAuth";
+import type { StrictGithubOAuthParams } from "~/types/GithubOAuth";
 import { useEffect, useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
@@ -46,24 +46,6 @@ export default function Home() {
 
 
   useEffect(()=>{
-    const checkRoute = async()=>{
-      try{
-        const res = await fetch('http://localhost:3000/api/auth',{
-           method : 'GET',
-         })
-        
-         if(res.ok){
-            const data = await res.json();
-            console.log("Auth route response:", data);
-         }
-        
-      }catch(error){
-        console.error("Error : Auth route check error", error);
-      }
-    }
-
-    checkRoute();
-
     const checkLogin = async ()=>{
       try{
          const res = await fetch('http://localhost:3000/api/auth/check',{
