@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { GithubUser } from "~/types/GithubInfo";
 
 
 export default function useGithubUser() : { userDataState: GithubUser | null; isLoading: boolean, isError : boolean }{
