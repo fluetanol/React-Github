@@ -30,7 +30,7 @@ export default function useGithub<T>(api_url: string) : useGithubResult<T>{
                     if(res.ok){
                         const data = await res.json();
                         console.log("User data response:", data);
-                        setGithubDataState(data.user);
+                        setGithubDataState(data);
                         setIsLoading(false);
                     }
                     else{
