@@ -16,7 +16,7 @@ export default function Dashboard(){
     const navigate = useNavigate();
 
     const render_time = useRenderingTimer("Dashboard", isLoading);
-
+    
     
     useEffect(()=>{
         if(isError){
@@ -25,20 +25,16 @@ export default function Dashboard(){
     }, [isError, navigate]);
 
 
-    console.log("Dashboard loading state:", isLoading, isError);
+    //console.log("Dashboard loading state:", isLoading, isError);
     if (isLoading) {
         return (
             <Loading/>
         );
     }
-    else{
-        console.log("duration time", render_time);
-    }
-    //console.log("Dashboard dataState:", dataState);
+
     const userDataState = dataState![0].user;
     const reposDataState = dataState![1];
 
-    console.timeEnd("a start");
 
     return (
         <div className="min-h-screen">
