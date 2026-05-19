@@ -3,6 +3,14 @@ import useFetchStore from "~/stores/fetchStore";
 
 
 
+/**
+ * 여러 API 엔드포인트에서 데이터를 가져오는 커스텀 훅입니다.
+ * 
+ * @param config   fetch 요청에 사용할 설정 객체입니다. (예: method, headers, body 등)
+ * @param staleTime   데이터가 신선한 상태로 간주되는 시간(밀리초)입니다. 이 시간이 지나면 데이터는 오래된 것으로 간주되어 다음 호출 시 새로 가져옵니다. 기본값은 0으로, 항상 새 데이터를 가져옵니다.
+ * @param api_url   가져올 API 엔드포인트의 URL입니다. 여러 개의 URL을 전달할 수 있습니다.
+ * @returns 
+ */
 export default function useFetchAll<T extends any[]>( config? : RequestInit, staleTime? : number, ...api_url : string[]) : 
 { dataState : T | null, isLoading : boolean, isError : boolean}{
 
