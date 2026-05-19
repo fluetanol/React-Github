@@ -4,6 +4,7 @@ import type { Route } from "./+types/home";
 import { Github } from "~/icons/Github";
 import type { StrictGithubOAuthParams } from "~/types/GithubOAuth";
 import MovingStrip from "~/components/home/MovingStrip";
+import useAuthCheck from "~/hooks/useAuthCheck";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -32,39 +33,17 @@ const handleOAuthLogin = (ID: string, URL: string) => {
 type CommonResponse = { success : boolean;} | { error : string; }
 
 export default function Home() {
-  const [loginCheckState, setLoginCheckState] = useState(false);
   const ID =  import.meta.env.VITE_GITHUB_CLIENT_ID;
   const URL = import.meta.env.VITE_GITHUB_CALLBACK_URL;
   const navigate = useNavigate();
-
+  
+  const { loginCheckState } = useAuthCheck();
 
   useEffect(()=>{
-    const checkLogin = async ()=>{
-      try{
-         const res = await fetch('http://localhost:3000/api/auth/check',{
-            method : 'GET',
-            credentials : 'include'
-         })
-
-         if(res.ok){
-            const data : CommonResponse = await res.json();
-            if('success' in data && data.success){
-              navigate('/dashboard');
-            }
-         }
-         else{
-              throw new Error("Unauthorized");
-         }
-      }
-      catch(error : unknown){
-        console.error("Error : Token verification error", error);
-        setLoginCheckState(true);
-      }
-    } 
-
-    checkLogin();
-
-  }, [navigate])
+    if(loginCheckState){
+      navigate("/dashboard");
+    }
+  },[loginCheckState, navigate])
  
 
 
@@ -77,7 +56,7 @@ export default function Home() {
             GitHub Dashboard
           </h1>
 
-          {loginCheckState ? (
+          {loginCheckState === false || loginCheckState === null ? (
             <button
               type="button"
               aria-label="Login with GitHub"
@@ -97,13 +76,7 @@ export default function Home() {
 
 
 
-        <div className = "absolute top-1/2 left-1/2  w-full h-full">
-          <div className = "-translate-x-1/2 -translate-y-1/2 w-100 h-100  spin-anim border-2 rounded-full">
-            <div className = "relative top-0 left-0 star">
 
-            </div>
-          </div>
-        </div>
 
         <MovingStrip/>
 
