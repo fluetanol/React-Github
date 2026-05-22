@@ -17,16 +17,18 @@ export interface DashboardSectionProps {
 export default function DashboardSection({ userDataState, mode }: DashboardSectionProps){
 
     const navigate = useNavigate();
+
     const { dataState, isLoading, isError} = useFetchAll<[GithubRepositoryResponse]>({
         method :'GET',
         credentials : 'include'
     }
     , 5 * 60 * 1000, "api/users/repos")
     
+    console.log("rendering DashboardSection with mode:", mode);
+
     useErrorCallback(isError, ()=>{
         navigate("/");
     })
-
 
 
     if (isLoading || userDataState === null) {
