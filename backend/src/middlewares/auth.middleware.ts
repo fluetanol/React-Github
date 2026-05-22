@@ -6,6 +6,14 @@ import { AuthRequest } from '../types/middlewares/auth';
 
 const prisma = new PrismaClient();
 
+/**
+ * JWT 토큰을 검증하여 인증된 사용자임을 확인하는 미들웨어
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
 export function authToken(req : AuthRequest , res : Response, next : NextFunction){
     const token = req.cookies.app_token;
     
@@ -27,6 +35,15 @@ export function authToken(req : AuthRequest , res : Response, next : NextFunctio
 }
 
 
+/**
+ * 
+ * userId와 githubId를 기반으로 데이터베이스에서 사용자를 조회하여 인증된 사용자임을 확인하는 미들웨어
+ * 
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
 export async function authUser(req : AuthRequest , res : Response, next : NextFunction){
     const { userId, githubId } = req.decoded_token!; //authToken 미들웨어에서 디코딩된 토큰 정보 사용
 

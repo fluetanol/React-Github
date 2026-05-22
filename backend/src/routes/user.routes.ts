@@ -7,7 +7,7 @@ import { authToken, authUser } from '../middlewares/auth.middleware';
 const prisma = new PrismaClient();
 const user_router = Router();
 
-// api/user/health
+// api/users/health
 user_router.get('/health', (req, res)=>{
     res.json({ message: 'User route is working!' });
 })
