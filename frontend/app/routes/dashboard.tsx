@@ -8,39 +8,53 @@ import DashboardSection from "~/components/dashboard/DashboardSection";
 import useGithubUser from "~/hooks/useUser";
 import useErrorCallback from "~/hooks/useErrorCallback";
 import useFetchErrorCallback from "~/hooks/useFetchErrorCallback";
+import SpinFloatEffect from "~/components/common/SpinFloatEffect";
+import { NavFloatButton } from "~/components/common/NavFloatButton";
+
+
+
+
+function OnSetFetchMode(e : React.MouseEvent<HTMLButtonElement>, setFetchMode : React.Dispatch<React.SetStateAction<1|2|3>>){
+    const val = e.currentTarget.value
+    setFetchMode(Number(val) as 1|2|3);
+}
 
 
 export default function Dashboard(){
     const navigate = useNavigate();
     const { userDataState, isLoading, isError} = useGithubUser();
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [ fetchMode, setFetchMode] = useState<1|2|3>(1);
     const render_time = useRenderingTimer("Dashboard", isLoading);
 
 
     useErrorCallback(isError, ()=>{
         navigate("/");
     })
+    
+    useEffect(()=>{
+        console.log("Current Fetch Mode:", fetchMode);
 
+    }, [fetchMode])
 
-
+    
     if(isLoading){
         return(
             <Loading/>
         )
     }
 
-
     return (
         <div className="min-h-screen bg-[#f4f6f1] text-gray-950 dark:bg-gray-950">
 
             <Header userDataState={userDataState!} />
-            <DashboardSection userDataState={userDataState!} mode={0} />
-
-            <nav className = "fixed bottom-8 right-8 w-16 h-16 border-2 rounded-4xl bg-white transition-all duration-200 hover:-translate-y-0.5 dark:bg-white"
-                onClick = {() => {
-
-                }}
-            >
-            </nav>
+            <DashboardSection userDataState={userDataState!} mode={fetchMode} />
+            <NavFloatButton 
+                onButtonClick={()=>{setModalOpen(prev => !prev)}} 
+                onFetchClick={(e)=>{OnSetFetchMode(e, setFetchMode)}} 
+                isOpen={isModalOpen} 
+                render_time={render_time}
+            />
 
         </div>
     );
