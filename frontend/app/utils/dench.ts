@@ -1,169 +1,13 @@
-import { HTTPCredentials } from "~/types/utils/simpleFetcher/simpleFetcher"
-import type { DenchConfig, DenchCreateBuilder, DenchGetBuilder, DenchInterface, DenchRunner } from "~/types/utils/simpleFetcher/dench";
-import denchfetcher from "./denchfetcher";
+import type { DenchConfig, DenchCreateBuilder, DenchGetBuilder, DenchInterface, DenchRunner, HTTPMode } from "~/types/utils/simpleFetcher/dench";
+import type { HTTPCredentials } from "~/types/utils/simpleFetcher/denchEnum";
 
-
-
-function runfetch<T>(config : DenchConfig) : Promise<Response>{
-    return denchfetcher<T>(`${config.baseURL}${config.api}`, config);
-}
-
-
-/**
- * timeout 설정 
- * 
- * @param config 
- * @param ms 
- * @returns 
- */
-function timeoutConfig(config : DenchConfig, ms : number) : DenchConfig {
-    return {
-        ...config,
-        timeout : ms
-    }
-}
-
-/**
- * AbortController를 통한 abort signal 설정
- * 
- * 만약 해당 DechConfig 객체를 풀에 넣어 재 사용할 계획이라면 
- * 해당 함수를 통해 다시 abort controller를 설정할 것을 권장합니다.
- * 
- * @param config 
- * @param controller 
- * @returns 
- */
-function abortConfig(config : DenchConfig, controller : AbortController) : DenchConfig {
-    return {
-        ...config,
-        abortController: controller,
-        options : {
-            ...config.options,
-            signal : controller.signal
-        }
-    }
-}
-
-
-/**
- * 
- * 인증 토큰을 Authorization 헤더에 설정하는 함수
- * 
- * @param config 
- * @param token 
- * @returns 
- */
-function authConfig(config: DenchConfig, token: string): DenchConfig {
-    const header = {
-        ...config.options.headers,
-        'Authorization': `Bearer ${token}`
-    }
-
-    return {
-        ...config,
-        options: {
-            ...config.options,
-            headers: header
-        }
-    }
-}
-
-/**
- * 쿠키 기반 인증을 위한 credentials 설정 함수
- * 
- * @param config 
- * @param credentials 
- * @returns 
- */
-function credentialsConfig(config: DenchConfig, credentials: HTTPCredentials): DenchConfig {
-    
-    return {
-        ...config,
-        options : {
-            ...config.options,
-            headers : {
-                ...config.options.headers
-            },
-            credentials : credentials
-        }
-    }
-}
-
-
-function sendJsonConfig(config : DenchConfig) :DenchConfig{
-    return{
-        ...config,
-        options : {
-            ...config.options,
-            headers :{
-                ...config.options.headers,
-                'Content-Type' : 'application/json'
-             },
-             body : JSON.stringify(config.options.body)
-            }
-        }
-}
-
-function sendFormConfig(config : DenchConfig) : DenchConfig {
-
-    if(!(config.options.body instanceof FormData)){
-        throw new Error("Body must be an instance of FormData when using sendForm");
-    }
-
-    return {
-        ...config,
-        options : {
-            ...config.options,
-            headers : {
-                ...config.options.headers,
-            },
-            body : config.options.body
-        }
-    }
-}
-
-
-function sendBlobConfig(config : DenchConfig) : DenchConfig {
-    return{
-        ...config,
-        options : {
-            ...config.options,
-            headers : {
-                ...config.options.headers,
-                'Content-Type' : 'application/octet-stream'
-             },
-            body : config.options.body
-        }
-    }
-}
-
-
-
-
-const toJson = async <T>(config : DenchConfig)  => {
-    return runfetch<T>(config).then((res) => {
-        return res.json() as T;
-    })
-}
-
-const toObject = async <T>(config: DenchConfig) => {
-    return runfetch<T>(config).then((res) => {
-        return res as unknown as T;
-    })
-}
-
-
-const toFormData = async <T>(config: DenchConfig) => {
-    return runfetch<T>(config).then((res) => {
-        return res.formData();
-    }
-)
-}
-
-
-const error = (config: DenchConfig, callback : (error : unknown) => void) => {
-    config.errorcallback = callback;
-}
+import { 
+    runfetch, toFormData, toObject, toJson, 
+    credentialsConfig, abortConfig, authConfig, 
+    timeoutConfig, sendJsonConfig, 
+    sendFormConfig, sendBlobConfig, 
+    modeConfig, 
+    error } from "./denchuitl";
 
 
 
@@ -186,6 +30,9 @@ export function denchRunner<T>(config : DenchConfig) : DenchRunner<T>{
  */
 export function dench(baseURL:string, label? :string) : DenchInterface{
 
+
+
+
     const get = <T>(api :string) : DenchGetBuilder<T> => {
 
         const baseConfig : DenchConfig = {
@@ -196,38 +43,26 @@ export function dench(baseURL:string, label? :string) : DenchInterface{
             }
         }
 
-        const builder : DenchGetBuilder<T> = {
+        const createBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
             config : baseConfig,
-            toResponse : () => runfetch<T>(builder.config),
-            toJson :  () => toJson(builder.config),
-            toObject : () => toObject(builder.config),
-            toFormData : () => toFormData(builder.config),
+            toResponse : () => runfetch<T>(config),
+            toJson :  () => toJson(config),
+            toObject : () => toObject(config),
+            toFormData : () => toFormData(config),
             error : (callback: (error: unknown) => void) => {
-                error(builder.config, callback);
-                 return { ...builder };
+                error(config, callback);
+                 return createBuilder<T>(config);
             },
-            credentials : (credentials: HTTPCredentials)=>{
-                const newBuilder : DenchGetBuilder<T> = {
-                    ...builder,
-                    config : credentialsConfig(builder.config, credentials)
-                }
-                return newBuilder;
-            },
-            abort : (controller : AbortController) =>{
-                builder.config = abortConfig(builder.config, controller);
-                return { ...builder };
-            },
-            auth : (token:string)=>{
-                builder.config = authConfig(builder.config, token);
-                return { ...builder };
-            },
-            timeout : (ms : number) => {
-                builder.config = timeoutConfig(builder.config, ms);
-                return { ...builder };
-            }
-        }
+            credentials : (credentials: HTTPCredentials)=> createBuilder<T>(credentialsConfig(config, credentials)),
+            abort : (controller : AbortController) => createBuilder<T>(abortConfig(config, controller)),
+            auth : (token:string)=> createBuilder<T>(authConfig(config, token)),
+            timeout : (ms : number) => createBuilder<T>(timeoutConfig(config, ms))
+            
+        })
 
-        return builder;
+        return{
+            ...createBuilder<T>(baseConfig)
+        }      
     }
 
 
@@ -255,16 +90,11 @@ export function dench(baseURL:string, label? :string) : DenchInterface{
                 error(config, callback);
                 return createBuilder<T>(config);
             },
-            credentials : (credentials: HTTPCredentials)=>{
-                const newConfig = credentialsConfig(config, credentials);
-                return createBuilder<T>(newConfig);
-            },
-            abort : (controller : AbortController) =>{
-                const newConfig = abortConfig(config, controller);
-                return createBuilder<T>(newConfig);
-            },
-            auth : (token:string)=>{
-                const newConfig = authConfig(config, token);
+            credentials: (credentials: HTTPCredentials) => createBuilder<T>(credentialsConfig(config, credentials)),
+            abort: (controller: AbortController) => createBuilder<T>(abortConfig(config, controller)),
+            auth: (token: string) => createBuilder<T>(authConfig(config, token)),
+            mode : (mode : HTTPMode) => {
+                const newConfig = modeConfig(config, mode);
                 return createBuilder<T>(newConfig);
             },
             timeout : (ms : number) => {
