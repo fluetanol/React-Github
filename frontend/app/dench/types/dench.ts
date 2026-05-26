@@ -25,6 +25,7 @@ export interface DenchBuilder<T>{
 }
 
 export interface DenchCreateBuilder<T> extends DenchBuilder<T>, DenchRunner<T>{
+    autoEdit: () => DenchBuilder<T>,
     abort: (controller: AbortController) => DenchCreateBuilder<T>,
     auth: (token:string) => DenchCreateBuilder<T>,
     credentials: (credentials: HTTPCredentials) => DenchCreateBuilder<T>,
@@ -36,12 +37,6 @@ export interface DenchCreateBuilder<T> extends DenchBuilder<T>, DenchRunner<T>{
     sendBlob : () => DenchCreateBuilder<T>,
 }
 
-export interface DenchRunner<T>{
-    toResponse: () => Promise<Response>,
-    toJson: () => Promise<T>,
-    toObject: () => Promise<T>,
-    toFormData: () => Promise<FormData>
-}
 
 /**
  * GET 요청 빌더 인터페이스
@@ -50,6 +45,7 @@ export interface DenchRunner<T>{
  */
 
 export interface DenchGetBuilder<T> extends DenchBuilder<T>, DenchRunner<T>{
+    autoEdit: () => DenchBuilder<T>,
     abort: (controller : AbortController) => DenchGetBuilder<T>,
     auth: (token:string) => DenchGetBuilder<T>,
     timeout : (ms : number) => DenchGetBuilder<T>,
@@ -73,4 +69,12 @@ export interface DenchInterface{
     post : <T>(api: string, data : any) => DenchCreateBuilder<T>
     put : <T>(api: string, data : any) => DenchCreateBuilder<T>
     delete : <T>(api: string) => DenchGetBuilder<T>
+}
+
+
+export interface DenchRunner<T> {
+    toResponse: () => Promise<Response>,
+    toJson: () => Promise<T>,
+    toObject: () => Promise<T>,
+    toFormData: () => Promise<FormData>
 }

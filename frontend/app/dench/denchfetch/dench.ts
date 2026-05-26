@@ -11,6 +11,54 @@ import { runfetch, toFormData, toJson, toObject } from "./denchRunner";
 
 
 
+const createGetBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
+    config: config,
+    toResponse: () => runfetch<T>(config),
+    toJson: () => toJson(config),
+    toObject: () => toObject(config),
+    toFormData: () => toFormData(config),
+    error: (callback: (error: unknown) => void) => {
+        errorConfig(config, callback);
+        return createGetBuilder<T>(config);
+    },
+    credentials: (credentials: HTTPCredentials) => createGetBuilder<T>(credentialsConfig(config, credentials)),
+    abort: (controller: AbortController) => createGetBuilder<T>(abortConfig(config, controller)),
+    auth: (token: string) => createGetBuilder<T>(authConfig(config, token)),
+    timeout: (ms: number) => createGetBuilder<T>(timeoutConfig(config, ms)),
+    autoEdit: () => createGetBuilder<T>(config)
+})
+
+
+const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
+    config: config,
+    toResponse: () => runfetch<T>(config),
+    toJson: () => toJson(config),
+    toObject: () => toObject(config),
+    toFormData: () => toFormData(config),
+    sendJson: () => createPostBuilder<T>(sendJsonConfig(config)),
+    sendForm: () => createPostBuilder<T>(sendFormConfig(config)),
+    sendBlob: () => createPostBuilder<T>(sendBlobConfig(config)),
+    error: (callback: (error: unknown) => void) => {
+        errorConfig(config, callback);
+        return createPostBuilder<T>(config);
+    },
+    credentials: (credentials: HTTPCredentials) => createPostBuilder<T>(credentialsConfig(config, credentials)),
+    abort: (controller: AbortController) => createPostBuilder<T>(abortConfig(config, controller)),
+    auth: (token: string) => createPostBuilder<T>(authConfig(config, token)),
+    mode: (mode: HTTPMode) => {
+        const newConfig = modeConfig(config, mode);
+        return createPostBuilder<T>(newConfig);
+    },
+    autoEdit: () => createPostBuilder<T>(config),
+    timeout: (ms: number) => {
+        const newConfig = timeoutConfig(config, ms);
+        return createPostBuilder<T>(newConfig);
+    }
+})
+
+
+
+
 /**
  * Dench 빌더 함수
  * 
@@ -22,34 +70,14 @@ export function dench(baseURL:string, label? :string) : DenchInterface{
 
     const get = <T>(api :string) : DenchGetBuilder<T> => {
 
-        const baseConfig : DenchConfig = {
+        const config : DenchConfig = {
             baseURL,
             api,
             options : {
                 method : 'GET',
             }
         }
-
-        const createBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
-            config : baseConfig,
-            toResponse : () => runfetch<T>(config),
-            toJson :  () => toJson(config),
-            toObject : () => toObject(config),
-            toFormData : () => toFormData(config),
-            error : (callback: (error: unknown) => void) => {
-                errorConfig(config, callback);
-                 return createBuilder<T>(config);
-            },
-            credentials : (credentials: HTTPCredentials)=> createBuilder<T>(credentialsConfig(config, credentials)),
-            abort : (controller : AbortController) => createBuilder<T>(abortConfig(config, controller)),
-            auth : (token:string)=> createBuilder<T>(authConfig(config, token)),
-            timeout : (ms : number) => createBuilder<T>(timeoutConfig(config, ms))
-            
-        })
-
-        return{
-            ...createBuilder<T>(baseConfig)
-        }      
+        return createGetBuilder<T>(config); 
     }
 
 
@@ -63,34 +91,7 @@ export function dench(baseURL:string, label? :string) : DenchInterface{
                 body : data
             }
         }
-
-        const createBuilder = <T>(config : DenchConfig) : DenchCreateBuilder<T> => ({
-            config : config,
-            toResponse : () => runfetch<T>(config),
-            toJson :  () => toJson(config),
-            toObject : ()=> toObject(config),
-            toFormData : ()=>toFormData(config),
-            sendJson: () =>  createBuilder<T>(sendJsonConfig(config)),
-            sendForm: () => createBuilder<T>(sendFormConfig(config)),
-            sendBlob: () => createBuilder<T>(sendBlobConfig(config)),
-            error : (callback: (error: unknown) => void) => {
-                errorConfig(config, callback);
-                return createBuilder<T>(config);
-            },
-            credentials: (credentials: HTTPCredentials) => createBuilder<T>(credentialsConfig(config, credentials)),
-            abort: (controller: AbortController) => createBuilder<T>(abortConfig(config, controller)),
-            auth: (token: string) => createBuilder<T>(authConfig(config, token)),
-            mode : (mode : HTTPMode) => {
-                const newConfig = modeConfig(config, mode);
-                return createBuilder<T>(newConfig);
-            },
-            timeout : (ms : number) => {
-                const newConfig = timeoutConfig(config, ms);
-                return createBuilder<T>(newConfig); 
-                }
-            })
-
-        return createBuilder<T>(baseConfig);
+        return createPostBuilder<T>(baseConfig);
     }
 
 
@@ -104,34 +105,7 @@ export function dench(baseURL:string, label? :string) : DenchInterface{
                 body: data
             }
         }
-
-        const createBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
-            config: config,
-            toResponse: () => runfetch<T>(config),
-            toJson: () => toJson(config),
-            toObject: () => toObject(config),
-            toFormData: () => toFormData(config),
-            sendJson: () => createBuilder<T>(sendJsonConfig(config)),
-            sendForm: () => createBuilder<T>(sendFormConfig(config)),
-            sendBlob: () => createBuilder<T>(sendBlobConfig(config)),
-            error: (callback: (error: unknown) => void) => {
-                errorConfig(config, callback);
-                return createBuilder<T>(config);
-            },
-            credentials: (credentials: HTTPCredentials) => createBuilder<T>(credentialsConfig(config, credentials)),
-            abort: (controller: AbortController) => createBuilder<T>(abortConfig(config, controller)),
-            auth: (token: string) => createBuilder<T>(authConfig(config, token)),
-            mode: (mode: HTTPMode) => {
-                const newConfig = modeConfig(config, mode);
-                return createBuilder<T>(newConfig);
-            },
-            timeout: (ms: number) => {
-                const newConfig = timeoutConfig(config, ms);
-                return createBuilder<T>(newConfig);
-            }
-        })
-
-        return createBuilder<T>(baseConfig);
+        return createPostBuilder<T>(baseConfig);
     }
 
 
@@ -144,34 +118,8 @@ export function dench(baseURL:string, label? :string) : DenchInterface{
                 method : 'DELETE',
             }
         }
-
-        const createBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
-            config: baseConfig,
-            toResponse: () => runfetch<T>(config),
-            toJson: () => toJson(config),
-            toObject: () => toObject(config),
-            toFormData: () => toFormData(config),
-            error: (callback: (error: unknown) => void) => {
-                errorConfig(config, callback);
-                return createBuilder<T>(config);
-            },
-            credentials: (credentials: HTTPCredentials) => createBuilder<T>(credentialsConfig(config, credentials)),
-            abort: (controller: AbortController) => createBuilder<T>(abortConfig(config, controller)),
-            auth: (token: string) => createBuilder<T>(authConfig(config, token)),
-            timeout: (ms: number) => createBuilder<T>(timeoutConfig(config, ms))
-
-        })
-
-        return {
-            ...createBuilder<T>(baseConfig)
-        }     
-
+        return createGetBuilder<T>(baseConfig);
     }
-
-
-
-
-
 
     return {
         baseURL,
