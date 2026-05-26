@@ -23,7 +23,6 @@ function OnSetFetchMode(e : React.MouseEvent<HTMLButtonElement>, setFetchMode : 
 export default function Dashboard(){
     const navigate = useNavigate();
     const { userDataState, isLoading, isError} = useGithubUser();
-    const [isModalOpen, setModalOpen] = useState(false);
     const [ fetchMode, setFetchMode] = useState<1|2|3>(1);
     const render_time = useRenderingTimer("Dashboard", isLoading);
 
@@ -50,9 +49,7 @@ export default function Dashboard(){
             <Header userDataState={userDataState!} />
             <DashboardSection userDataState={userDataState!} mode={fetchMode} />
             <NavFloatButton 
-                onButtonClick={()=>{setModalOpen(prev => !prev)}} 
                 onFetchClick={(e)=>{OnSetFetchMode(e, setFetchMode)}} 
-                isOpen={isModalOpen} 
                 render_time={render_time}
             />
 

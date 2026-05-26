@@ -1,24 +1,26 @@
+import { useState } from "react";
 import SpinFloatEffect from "./SpinFloatEffect";
 
 
 export interface NavFloatButtonProps{
-    onButtonClick : () => void,
     onFetchClick : (e : React.MouseEvent<HTMLButtonElement>) => void,
-    isOpen : boolean,
     render_time : number
 }
 
 
 
-export function NavFloatButton({ onButtonClick, onFetchClick, isOpen, render_time } : NavFloatButtonProps){
+export function NavFloatButton({ onFetchClick, render_time } : NavFloatButtonProps){
+    
+    const [isModalOpen, setModalOpen] = useState(false);
+
     return(
         <nav className = "fixed bottom-8 right-8 w-20 h-20 rounded-full shadow-md bg-white transition-all duration-200 hover:-translate-y-0.5  dark:bg-white"
                 onClick = {() => {
-                    onButtonClick();
+                    setModalOpen(prev => !prev);
                 }}
             >
-                <SpinFloatEffect isModalOpen={isOpen}/>
-                {isOpen && (
+                <SpinFloatEffect isModalOpen={isModalOpen}/>
+                {isModalOpen && (
                     <div className="absolute right-8 bottom-22 rounded-2xl w-100 h-150 shadow-md  bg-[#eef4ff]/60 border-white backdrop-blur-xs p-10 overflow-hidden">
                         <header className="flex flex-col gap-2 pb-2 mb-4 items-baseline">
                             <h1 className ="text-2xl font-bold">Fetch Config</h1>
