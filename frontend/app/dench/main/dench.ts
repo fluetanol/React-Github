@@ -1,5 +1,5 @@
-import type { DenchConfig, DenchCreateBuilder, DenchGetBuilder, DenchInterface, DenchRunner } from "~/types/utils/simpleFetcher/dench";
-import type { HTTPCredentials, HTTPMode } from "~/types/utils/simpleFetcher/denchEnum";
+import type { DenchConfig, DenchCreateBuilder, DenchGetBuilder, DenchInterface, DenchRunner } from "~/dench/types/dench";
+import type { HTTPCredentials, HTTPMode } from "~/dench/types/denchEnum";
 
 import { 
     credentialsConfig, abortConfig, authConfig, 
@@ -7,7 +7,7 @@ import {
     sendFormConfig, sendBlobConfig, 
     modeConfig, 
     errorConfig } from "./denchConfigModule"
-import { runfetch, toFormData, toJson, toObject } from "./denchRunnter";
+import { runfetch, toFormData, toJson, toObject } from "./denchRunner";
 
 
 /**

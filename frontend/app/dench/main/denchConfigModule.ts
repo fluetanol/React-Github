@@ -1,5 +1,5 @@
-import type { DenchConfig } from "~/types/utils/simpleFetcher/dench";
-import type { HTTPCredentials, HTTPMode } from "~/types/utils/simpleFetcher/denchEnum";
+import type { DenchConfig } from "~/dench/types/dench";
+import type { HTTPCredentials, HTTPMode } from "~/dench/types/denchEnum";
 
 /**
  * timeout 설정 

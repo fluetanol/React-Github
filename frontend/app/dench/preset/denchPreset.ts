@@ -1,7 +1,7 @@
-import type { DenchConfig, DenchRunner } from "~/types/utils/simpleFetcher/dench";
-import { HTTPCredentials } from "~/types/utils/simpleFetcher/denchEnum";
-import type { DenchPresetsOptionalParams } from "~/types/utils/simpleFetcher/denchPreset";
-import { runfetch, toFormData, toJson, toObject } from "./denchRunnter";
+import type { DenchConfig, DenchRunner } from "~/dench/types/dench";
+import { HTTPCredentials } from "~/dench/types/denchEnum";
+import type { DenchPresetsOptionalParams } from "~/dench/types/denchPreset";
+import { runfetch, toFormData, toJson, toObject } from "../main/denchRunner";
 
 function deepFreezeConfig(config : DenchConfig) : DenchConfig{
 
