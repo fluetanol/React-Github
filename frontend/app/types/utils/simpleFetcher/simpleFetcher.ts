@@ -1,4 +1,4 @@
-import type { HTTPCredentials } from "./denchEnum";
+import type { HTTPCredentials } from "../../../dench/types/denchEnum";
 
 export interface FetchFactoryConfig {
     baseURL: string,
