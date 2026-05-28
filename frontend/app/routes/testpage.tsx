@@ -1,55 +1,33 @@
 
-import { useEffect, useRef } from "react"
-import { HTTPCredentials } from "~/dench/types/denchEnum";
-import { dench } from "~/dench/denchfetch/dench";
-import { createDenchPresets, denchPresetRunner } from "~/dench/preset/denchPreset";
-import { DenchDefaultPresets } from "~/dench/types/denchPresetEnum";
+import { useEffect } from "react";
+import { useOutletContext } from "react-router";
+import type { FloatState } from "~/components/layout/DashboardLayout";
+import DenchComponent from "~/components/testpage/DenchComponent";
+import TanstackComponent from "~/components/testpage/TanstackComponent";
 
-
-
+export interface TestResponse{
+        message : string,
+        name : string,
+        timestamp : string,
+        description : string
+    }
 
 
 export default function TestPage(){
-
-    const denchInstance = useRef(dench("http://localhost:3000/api/", "3000 test"));
-    const denchPreset = createDenchPresets(DenchDefaultPresets.GET_COOKIES_JSON,"http://localhost:3000/api/", 
-            { api: "testing/health" }
-        );
-
+    
+    const floatMode  = useOutletContext<FloatState>();
 
     useEffect(()=>{
-        const fetchTest = async () =>{
-            const dench = denchInstance.current;
-            try{
-                const responses = await Promise.all([
-                    dench.post("testing/health", { message: "Hello, server!" })
-                    .sendJson()
-                    .toResponse(),
-                    dench.post("testing/authhealth", { message: "Hello, authenticated server!" })
-                    .sendJson()
-                    .credentials(HTTPCredentials.INCLUDE)
-                    .toResponse(),
-                    denchPresetRunner(denchPreset).toResponse()
-                ])
-
-                console.log("Response from /api/testing/health:", responses[0]);
-                console.log("Response from /api/testing/authhealth:", responses[1]);
-                console.log("Response from preset /api/testing/health:", responses[2]);
-
-
-            }catch(error){
-                console.error("Error fetching /api/testing/health:", error);
-             
-
-            }
-        }
-        fetchTest();
-    }, [])
+        console.log("Current Fetch Mode in TestPage:", floatMode);
+    },[floatMode])
 
 
     return(
         <>
-            
+            <h1>Test Page</h1>
+            {floatMode == "1" && <DenchComponent/>}
+            {floatMode == "2" && <TanstackComponent/>}
+
         </>
     )
 }
