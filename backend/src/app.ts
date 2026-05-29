@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 import user_router from './routes/user.routes';
 import auth_router from './routes/auth.routes';
 import testing_router from './routes/testing.routes';
-import { TestSchema } from './graphql/test';
+import { TestSchema, root } from './graphql/test';
 
 
 dotenv.config();
@@ -40,11 +40,12 @@ app.use('/api/auth', auth_router);
 app.use('/api/testing', testing_router);
 
 
-
-
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', 
+  graphqlHTTP({
     schema: TestSchema,
+    rootValue : root,
     graphiql: true,
+
 }));
 
 // 서버 실행

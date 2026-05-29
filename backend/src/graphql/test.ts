@@ -10,15 +10,6 @@ interface Test{
     description : string;
 }
 
-
-
-/**
- *      message: 'This is a JSON response from an authenticated endpoint',
-        name : 'Dench',
-        timestamp : new Date().toISOString(),
-        description : 'This endpoint is used to test authenticated JSON responses in the Dench testing suite'  
- */
-
 export const TestSchema = buildSchema(`   
     type Test{
         id : ID!
@@ -27,7 +18,6 @@ export const TestSchema = buildSchema(`
         timestamp : String
         description : String
     }
-
 
     type Query{
         tests : [Test!]!
@@ -41,9 +31,10 @@ const tests : Test[]= [
     { id : "2", message: 'Another test message', name : 'Dench2', timestamp : new Date().toISOString(), description : 'Another test description' },
 ];
 
-const root = {
-
+export const root = {
     tests : () => tests,
-
-    test : ({id} : {id : string}) => tests.find(test => test.id === id)
+    test : ({id} : {id : string}) => {
+        console.log("Received test query with id:", id);
+        return tests.find(test => test.id === id);
+    }
 };
