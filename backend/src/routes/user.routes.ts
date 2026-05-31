@@ -13,6 +13,7 @@ user_router.get('/health', (req, res)=>{
 })
 
 
+
 // api/users
 user_router.get('/', authToken, authUser, async (req: AuthRequest, res) => {
 
@@ -52,6 +53,52 @@ user_router.get('/', authToken, authUser, async (req: AuthRequest, res) => {
     }
 
 });
+
+
+/**
+ *     userDataState : {
+        avatar_url : string,
+        login : string
+    }
+    오직 헤더 컴포넌트만을 위해 가져오는 간단한 정보
+ **/
+// api/users/userheader
+user_router.get('/userheader', authToken, authUser, async(req : AuthRequest, res)=>{
+    const user = req.user!;
+
+    const query = `
+        query GetUser($login : String!){
+            user(login : $login){
+                login
+                avatarUrl
+            }
+        }
+    `
+
+    const github_response = await fetch('https://api.github.com/graphql',{
+        method : 'POST',
+        headers :{
+            'Authorization' : `Bearer ${user.githubAccessToken}`,
+            'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify({
+            query,
+            variables : {
+                login : user.githubUsername
+            }
+        })
+    })
+
+    const data  = await github_response.json();
+
+    if(github_response.ok){
+        res.status(200).json({ userDataState : data });
+    }
+    else{
+        res.status(500).json({ error : 'GitHub API 요청 실패' });
+    }
+
+})
 
 
 // api/users/repos
