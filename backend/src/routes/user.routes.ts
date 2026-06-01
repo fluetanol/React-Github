@@ -62,7 +62,7 @@ user_router.get('/', authToken, authUser, async (req: AuthRequest, res) => {
             const github_user = await github_response.json();
             
             res.status(200).json({
-                user : github_user
+                data : github_user
             })
         }
         else{
@@ -120,7 +120,6 @@ user_router.get('/userheader', authToken, authUser, async(req : AuthRequest, res
     })
 
     const data  = await github_response.json();
-
 
 
     const userData = ChangeResponseType<GithubCommonResponse<GithubUserResponse>>(data).data.user;
