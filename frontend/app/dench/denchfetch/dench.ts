@@ -8,6 +8,9 @@ import {
     modeConfig, 
     errorConfig } from "./denchConfigModule"
 import { runfetch, toFormData, toJson, toObject } from "./denchRunner";
+import { boundaryNormalize, hardNormalize } from "./denchUtils";
+
+
 
 
 
@@ -25,7 +28,25 @@ const createGetBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
     abort: (controller: AbortController) => createGetBuilder<T>(abortConfig(config, controller)),
     auth: (token: string) => createGetBuilder<T>(authConfig(config, token)),
     timeout: (ms: number) => createGetBuilder<T>(timeoutConfig(config, ms)),
-    autoEdit: () => createGetBuilder<T>(config)
+    boundaryNormalize: () => {
+        const { baseURL, apiURL } = boundaryNormalize(config.baseURL, config.api);
+
+        const newConfig = {
+            ...config,
+            baseURL,
+            api: apiURL
+        }
+        return createGetBuilder<T>(newConfig);
+    },
+    hardNormalize: () => {
+        const { baseURL, apiURL } = hardNormalize(config.baseURL, config.api);
+        const newConfig = {
+            ...config,
+            baseURL,
+            api: apiURL
+        }
+        return createGetBuilder<T>(newConfig);
+    }
 })
 
 
@@ -45,14 +66,19 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
     credentials: (credentials: HTTPCredentials) => createPostBuilder<T>(credentialsConfig(config, credentials)),
     abort: (controller: AbortController) => createPostBuilder<T>(abortConfig(config, controller)),
     auth: (token: string) => createPostBuilder<T>(authConfig(config, token)),
-    mode: (mode: HTTPMode) => {
-        const newConfig = modeConfig(config, mode);
-        return createPostBuilder<T>(newConfig);
+    mode: (mode: HTTPMode) =>  createPostBuilder<T>(modeConfig(config, mode)),
+    timeout: (ms: number) => createPostBuilder<T>(timeoutConfig(config, ms)),
+    boundaryNormalize: () => {
+        const { baseURL, apiURL } = boundaryNormalize(config.baseURL, config.api);
+        config.baseURL = baseURL;
+        config.api = apiURL;
+        return createPostBuilder<T>(config);
     },
-    autoEdit: () => createPostBuilder<T>(config),
-    timeout: (ms: number) => {
-        const newConfig = timeoutConfig(config, ms);
-        return createPostBuilder<T>(newConfig);
+    hardNormalize: () => {
+        const { baseURL, apiURL } = hardNormalize(config.baseURL, config.api);
+        config.baseURL = baseURL;
+        config.api = apiURL;
+        return createPostBuilder<T>(config);
     }
 })
 
@@ -60,6 +86,9 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
 
 export const DenchInstancePreset : Partial<Record<string, DenchInterface>> = {}
 
+
+// url 타입을 http:// 또는 https://로 제한하는 게 가능하다.
+type DenchURL = `http://${string}` | `https://${string}`
 
 
 /**
@@ -69,7 +98,7 @@ export const DenchInstancePreset : Partial<Record<string, DenchInterface>> = {}
  * @param label 빌더 레이블
  * @returns 
  */
-export function dench(baseURL:string, label? :string) : DenchInterface{
+export function dench<T>(baseURL: DenchURL, label? :string) : DenchInterface{
 
     if(label) DenchInstancePreset[label] = DenchInstancePreset[label] || dench(baseURL);
 
