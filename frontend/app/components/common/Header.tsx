@@ -10,7 +10,7 @@ interface UserDataState{
     avatarUrl : string
 }
 
-interface CommonResponse<T>{
+export interface CommonResponse<T>{
     data : T
 }
 
