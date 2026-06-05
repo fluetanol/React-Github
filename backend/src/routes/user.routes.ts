@@ -1,20 +1,10 @@
 import Router from 'express';
-import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../types/middlewares/auth';
 import { authToken, authUser } from '../middlewares/auth.middleware';
+import { GithubCommonResponse } from '../types/middlewares/common';
 
-const prisma = new PrismaClient();
 const user_router = Router();
 
-
-/**
- * GitHub API에서 받아오는 사용자 정보의 타입을 정의하는 인터페이스입니다.
- * Github API상 모든 응답은 공통적으로 data 필드 안에 담깁니다
- * 
- */
-interface GithubCommonResponse<T>{
-    data : T
-}
 
 /**
  * 
@@ -120,7 +110,6 @@ user_router.get('/userheader', authToken, authUser, async(req : AuthRequest, res
     })
 
     const data  = await github_response.json();
-
 
     const userData = ChangeResponseType<GithubCommonResponse<GithubUserResponse>>(data).data.user;
     console.log("GitHub GraphQL API response:", data);
