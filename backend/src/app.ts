@@ -3,11 +3,11 @@ import type {Request, Response} from 'express';
 import {graphqlHTTP} from 'express-graphql';
 import cors from 'cors';
 import dotenv from 'dotenv';
-
 import cookieParser from 'cookie-parser';
 import user_router from './routes/user.routes';
 import auth_router from './routes/auth.routes';
 import testing_router from './routes/testing.routes';
+import repo_router from './routes/repo.routes';
 import { TestSchema, root } from './graphql/test';
 
 
@@ -38,6 +38,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/users', user_router);
 app.use('/api/auth', auth_router);
 app.use('/api/testing', testing_router);
+app.use('/api/repos', repo_router);
 
 
 app.use('/graphql', 
