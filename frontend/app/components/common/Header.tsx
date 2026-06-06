@@ -1,24 +1,21 @@
 import { useQuery } from "@tanstack/react-query"
 import { useRef } from "react"
 import { useNavigate } from "react-router"
-import { dench } from "~/dench/denchfetch/dench"
-import { HTTPCredentials } from "~/dench/types/denchEnum"
+import { dench, HTTPCredentials } from "dench-fetch"
 import { Github } from "~/icons/Github"
+import type { CommonResponse } from "~/types/common/common"
 
 interface UserDataState{
     login : string,
     avatarUrl : string
 }
 
-export interface CommonResponse<T>{
-    data : T
-}
 
 export default function Header(){
 
     const denchInstance = useRef(dench("http://localhost:3000/api//", "headerDench"));
 
-    const { data, error, isLoading} = useQuery<UserDataState, Error>(
+    const { data, error, isLoading, isError} = useQuery<UserDataState, Error>(
         {
             queryKey: ["headerUserData"], 
             queryFn: async() =>{
@@ -36,9 +33,12 @@ export default function Header(){
         }
     );
 
-    
-
     const navigate = useNavigate();
+
+    if(isError){
+        console.error("Error fetching user header data:", error);
+        return null; // 또는 에러 메시지를 표시하는 컴포넌트 반환
+    }
 
 
     return(
@@ -56,7 +56,11 @@ export default function Header(){
                 </div>
 
                 <div className="flex flex-row gap-3 text- font-medium tracking-[0.12em] text-gray-800 dark:text-gray-200">
-                    <button className="hover:text-gray-400 hover:cursor-pointer dark:hover:text-gray-300">Stastics</button>
+                    <button className="hover:text-gray-400 hover:cursor-pointer dark:hover:text-gray-300"
+                        onClick={()=>{
+                            navigate("/statpage");
+                        }}
+                    >Stastics</button>
                     <button className="hover:text-gray-400 hover:cursor-pointer dark:hover:text-gray-300" 
                     onClick={()=>{
                         navigate("/testpage");
