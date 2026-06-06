@@ -1,14 +1,13 @@
 import { useNavigate } from "react-router";
 import { Loading } from "~/components/common/Loading";
-import Header, { type CommonResponse } from "~/components/common/Header";
 import DashboardSection from "~/components/dashboard/DashboardSection";
-import useGithubUser from "~/hooks/useUser";
 import useErrorCallback from "~/hooks/useErrorCallback";
 import { useQuery } from "@tanstack/react-query";
-import { dench } from "~/dench/denchfetch/dench";
+import { dench } from "dench-fetch";
 import { useRef } from "react";
-import { HTTPCredentials } from "~/dench/types/denchEnum";
+import { HTTPCredentials } from "dench-fetch";
 import type { GithubUser } from "~/types/GithubInfo";
+import type { CommonResponse } from "~/types/common/common";
 
 
 
