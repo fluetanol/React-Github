@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { dench, HTTPCredentials } from "dench-fetch";
 import { useMemo, useState } from "react"
-import EmptyState from "~/components/page/stat/EmptyState";
 import OverviewSection from "~/components/page/stat/OverviewSection";
-import PreferredCommitTime from "~/components/page/stat/PreferredCommitTime";
+import PreferredCommitTimeArticle from "~/components/page/stat/PreferredCommitTimeArticle";
 import RepositoryActivitySection from "~/components/page/stat/RepositoryActivitySection";
 import RepositoryCategoriesArticle from "~/components/page/stat/RepositoryCategoriesArticle";
-import SectionHeading from "~/components/page/stat/SectionHeading";
 import StatTitleSection from "~/components/page/stat/StatTitleSection";
-import TechnologyDistribution from "~/components/page/stat/TechnologyDistribution";
-import WeekActivity from "~/components/page/stat/WeekActivity";
+import TechnologyDistributionArticle from "~/components/page/stat/TechnologyDistributionArticle";
+import TechnologyDistribution from "~/components/page/stat/TechnologyDistributionArticle";
+import WeekActivityArticle from "~/components/page/stat/WeekActivityArticle";
+import WeekActivity from "~/components/page/stat/WeekActivityArticle";
 import WorkingStyleArticle from "~/components/page/stat/WorkingStyleArticle";
 import type { CommonResponse } from "~/types/common/common";
 import type { DevelopStatsNode, GithubCommitTimeRepositoryNode, GithubLanguageRepositoryNode, GithubProjectTopicsNode, GithubRepoCommonResponse, ProjectLiveRateNode } from "~/types/page/statpage";
@@ -19,8 +19,6 @@ import {
     calculateLanguageStats,
     calculateProjectCategories,
     calculateProjectHealth,
-    formatHour,
-    type ProjectStatus,
 } from "~/utils/statpage";
 
 
@@ -68,20 +66,6 @@ export default function StatPage(){
         health: calculateProjectHealth(data?.[4]),
     }), [data]);
 
-    const overviewStats = [
-        { label: "Analyzed repos", value: analytics.health.total, caption: `${analytics.health.forks} forks included` },
-        { label: "Recent commits", value: analytics.commits.total, caption: "Fetched default branch history" },
-        { label: "Active projects", value: analytics.health.active, caption: "Pushed within 30 days" },
-        { label: "Primary stack", value: analytics.languages[0]?.name ?? "-", caption: "By total code size" },
-    ];
-
-    const strongestTime = analytics.commits.total > 0
-        ? analytics.commits.timeBuckets.reduce(
-            (strongest, current) => current.count > strongest.count ? current : strongest,
-            analytics.commits.timeBuckets[0],
-        )
-        : undefined;
-
 
     return(
         <div className="min-h-screen bg-[#f4f6f1] text-gray-950 dark:bg-gray-950 dark:text-white">
@@ -90,12 +74,12 @@ export default function StatPage(){
                 <OverviewSection analytics={analytics} isLoading={isLoading} />
 
                 <section className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-                    <TechnologyDistribution languages={analytics.languages} isLoading={isLoading} />
-                    <WeekActivity commits={analytics.commits} isLoading={isLoading} />
+                    <TechnologyDistributionArticle languages={analytics.languages} isLoading={isLoading} />
+                    <WeekActivityArticle commits={analytics.commits} isLoading={isLoading} />
                 </section>
 
                 <section className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
-                    <PreferredCommitTime commits={analytics.commits} />
+                    <PreferredCommitTimeArticle commits={analytics.commits} />
                     <WorkingStyleArticle developer={analytics.developer} isLoading={isLoading} />
                     <RepositoryCategoriesArticle categories={analytics.categories} isLoading={isLoading} />     
                 </section>

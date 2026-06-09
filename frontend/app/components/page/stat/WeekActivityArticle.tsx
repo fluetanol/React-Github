@@ -11,7 +11,7 @@ interface WeekActivityProps{
 
 
 
-export default function WeekActivity({commits, isLoading }: WeekActivityProps){
+export default function WeekActivityArticle({commits, isLoading }: WeekActivityProps){
         return(
             <article className={`${surfaceClass} p-7 md:p-8`}>
                 <SectionHeading eyebrow="Commit rhythm" title="Weekly activity" detail="Default branch commit frequency" />

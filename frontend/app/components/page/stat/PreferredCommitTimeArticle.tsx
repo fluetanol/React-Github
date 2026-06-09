@@ -11,7 +11,7 @@ export interface PreferredCommitTimeProps{
 
 
 
-export default function PreferredCommitTime({ commits }: PreferredCommitTimeProps){
+export default function PreferredCommitTimeArticle({ commits }: PreferredCommitTimeProps){
 
     const strongestTime = commits.total > 0
         ? commits.timeBuckets.reduce(

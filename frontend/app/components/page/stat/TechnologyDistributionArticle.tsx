@@ -12,7 +12,7 @@ export interface TechnologyDistributionProps{
 
 
 
-export default function TechnologyDistribution({ languages, isLoading }: TechnologyDistributionProps){
+export default function TechnologyDistributionArticle({ languages, isLoading }: TechnologyDistributionProps){
 
     return(
     <article className={`${surfaceClass} p-7 md:p-8`}>
