@@ -6,6 +6,7 @@ import OverviewSection from "~/components/page/stat/OverviewSection";
 import SectionHeading from "~/components/page/stat/SectionHeading";
 import StatTitleSection from "~/components/page/stat/StatTitleSection";
 import TechnologyDistribution from "~/components/page/stat/TechnologyDistribution";
+import WeekActivity from "~/components/page/stat/WeekActivity";
 import type { CommonResponse } from "~/types/common/common";
 import type { DevelopStatsNode, GithubCommitTimeRepositoryNode, GithubLanguageRepositoryNode, GithubProjectTopicsNode, GithubRepoCommonResponse, ProjectLiveRateNode } from "~/types/page/statpage";
 import {
@@ -87,25 +88,7 @@ export default function StatPage(){
 
                 <section className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
                     <TechnologyDistribution languages={analytics.languages} isLoading={isLoading} />
-
-                    <article className={`${surfaceClass} p-7 md:p-8`}>
-                        <SectionHeading eyebrow="Commit rhythm" title="Weekly activity" detail="Default branch commit frequency" />
-                        <div className="mt-8 flex h-64 items-end gap-3">
-                            {analytics.commits.weekdays.map((day) => (
-                                <div key={day.label} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-3">
-                                    <span className="text-xs font-semibold text-gray-400">{day.count}</span>
-                                    <div className="flex h-full w-full items-end rounded-2xl bg-gray-100 p-1.5 dark:bg-gray-800">
-                                        <div
-                                            className="w-full rounded-xl bg-github-light shadow-[0_8px_20px_rgba(65,131,196,0.22)]"
-                                            style={{ height: `${day.heightPercent}%` }}
-                                        />
-                                    </div>
-                                    <span className="text-xs font-medium text-gray-400">{day.label}</span>
-                                </div>
-                            ))}
-                        </div>
-                        {!isLoading && analytics.commits.total === 0 && <EmptyState text="No commit history available" />}
-                    </article>
+                    <WeekActivity commits={analytics.commits} isLoading={isLoading} />
                 </section>
 
                 <section className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
