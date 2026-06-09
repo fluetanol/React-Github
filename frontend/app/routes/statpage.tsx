@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { dench, HTTPCredentials } from "dench-fetch";
 import { useMemo, useState } from "react"
+import EmptyState from "~/components/page/stat/EmptyState";
 import SectionHeading from "~/components/page/stat/SectionHeading";
 import type { CommonResponse } from "~/types/common/common";
 import type { DevelopStatsNode, GithubCommitTimeRepositoryNode, GithubLanguageRepositoryNode, GithubProjectTopicsNode, GithubRepoCommonResponse, ProjectLiveRateNode } from "~/types/page/statpage";
@@ -15,7 +16,7 @@ import {
 } from "~/utils/statpage";
 
 
-const surfaceClass = "rounded-[1.75rem] bg-white shadow-[0_22px_65px_rgba(15,23,42,0.08)] dark:bg-gray-900";
+export const surfaceClass = "rounded-[1.75rem] bg-white shadow-[0_22px_65px_rgba(15,23,42,0.08)] dark:bg-gray-900";
 
 export default function StatPage(){
 
@@ -251,7 +252,4 @@ function getStatusClass(status: ProjectStatus){
     return "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300";
 }
 
-function EmptyState({ text }: { text: string }){
-    return <p className="rounded-3xl bg-gray-100 p-5 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">{text}</p>
-}
 
