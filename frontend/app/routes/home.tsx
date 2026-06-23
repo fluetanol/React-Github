@@ -44,7 +44,18 @@ export default function Home() {
     }
   },[loginCheckState, navigate])
  
+  console.log("Login Check State:", loginCheckState);
 
+  if(loginCheckState === null){
+    // login 체크를 일단 수행한 뒤, 안된다면 메인을 띄우고 되었다면 대시보드로 리다이렉션 시킨다
+    return null;
+  }
+
+  if(loginCheckState === true){
+    return(
+        <div className="w-screen h-screen bg-gray-300"></div>
+    )
+  }
 
   return (
 
