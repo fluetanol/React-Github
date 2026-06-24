@@ -2,7 +2,7 @@ import { surfaceClass } from "~/routes/statpage";
 import SectionHeading from "./SectionHeading";
 import { calculateDeveloperProfile } from "~/utils/statpage";
 import EmptyState from "./EmptyState";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { dench, HTTPCredentials } from "dench-fetch";
 import type { CommonResponse } from "~/types/common/common";
 import { useQuery } from "@tanstack/react-query";
@@ -14,11 +14,36 @@ export interface WorkingStyleArticleProps{
 }
 
 
+function Skeleton(){
+    return(
+        <div>
+            <div className="mb-2 flex items-center justify-between text-sm">
+                <span className="h-2 w-16 bg-gray-400 animate-pulse"></span>
+                <span className="h-2 w-8 bg-gray-400 animate-pulse"></span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse">
+            </div>
+        </div>
+    )
+}
+
+
+
+function Skeleton2(){
+    return(
+        <div className="rounded-3xl bg-gray-100 p-4 dark:bg-gray-800 animate-pulse">
+
+        </div>
+    )
+}
+
 
 
 export default function WorkingStyleArticle(){
     
     const denchInstance = useState(() => dench("http://localhost:3000/api", "workingStyleArticleDench"))[0];
+
+    const [percents, setPercents] = useState<number[]>([]);
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["workingStyleArticleData"],
@@ -31,21 +56,56 @@ export default function WorkingStyleArticle(){
         gcTime : 10 * 60 * 1000,
     });
 
-
     const developer = useMemo(()=> calculateDeveloperProfile(data!), [data]);
+
+    useEffect(()=>{
+        if(!isLoading){
+            const arr = developer.profiles.map((profile)=>{
+                return profile.percent ?? 0;
+            })
+            setPercents(arr);
+        }
+    }, [isLoading, developer.profiles]);
+
+
+
+    if(isLoading){
+
+        const skeletons : ReturnType<typeof Skeleton>[] = [];
+        for(let i=0; i<5; ++i){
+            skeletons.push(<Skeleton key={i}/>)
+        }
+        const skeletons2 : ReturnType<typeof Skeleton2>[] = [];
+        for(let i=0; i<2; ++i){
+            skeletons2.push(<Skeleton2 key={i}/>)
+        }
+
+        return(
+            <article className={`${surfaceClass} p-7 md:p-8`}>
+                <SectionHeading eyebrow="Development profile" title="Working style" detail="Inferred from time, stack, and topics" />
+                    <div className="mt-8 space-y-5">
+                        {skeletons}
+                    </div>
+                    <div className="mt-8 h-32 grid gap-3 sm:grid-cols-2">
+                        {skeletons2}
+                    </div>
+            </article>
+        )
+    }
+
 
     return(
             <article className={`${surfaceClass} p-7 md:p-8`}>
                 <SectionHeading eyebrow="Development profile" title="Working style" detail="Inferred from time, stack, and topics" />
                 <div className="mt-8 space-y-5">
-                    {developer.profiles.slice(0, 5).map((profile) => (
+                    {developer.profiles.slice(0, 5).map((profile, idx) => (
                         <div key={profile.name}>
                             <div className="mb-2 flex items-center justify-between text-sm">
                                 <span className="font-medium">{profile.name}</span>
                                 <span className="text-gray-400">{profile.percent}%</span>
                             </div>
                             <div className="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
-                                <div className="h-full rounded-full bg-gray-950 dark:bg-white" style={{ width: `${profile.percent}%` }} />
+                                <div className="h-full rounded-full bg-gray-950 dark:bg-white" style={{ width: `${percents[idx]}%` }} />
                             </div>
                         </div>
                     ))}

@@ -24,6 +24,20 @@ function getStatusClass(status: ProjectStatus){
 }
 
 
+function Skeleton(){
+    return(
+        <div className="grid gap-4 rounded-3xl bg-gray-100 px-5 py-4 sm:grid-cols-[1fr_110px_140px_90px] sm:items-center animate-pulse dark:bg-gray-800">
+            <p className="truncate font-semibold"></p>
+            <span className={`w-fit rounded-full px-3 py-1 text-xs font-semibold}`}>
+            </span>
+            <p className="text-sm text-gray-500 dark:text-gray-400"></p>
+            <p className="text-sm text-gray-400"></p>
+        </div>
+
+    )
+}
+
+
 export default function RepositoryActivitySection(){
 
         const [denchInstance] = useState(()=>dench("http://localhost:3000/api", "repositoryActivitySectionDench"));
@@ -42,6 +56,12 @@ export default function RepositoryActivitySection(){
 
 
         if(isLoading){
+
+            const skeletons  : ReturnType<typeof Skeleton>[] = [];
+            for(let i=0; i<8; ++i){
+                skeletons.push(<Skeleton key={i} />)
+            }
+
             return(
              <section className={`${surfaceClass} p-7 md:p-8`}>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -53,17 +73,7 @@ export default function RepositoryActivitySection(){
                     </div>
                 </div>
                 <div className="mt-8 grid gap-3">
-                    {health.projects.slice(0, 8).map((project) => (
-                        <div key={project.name} className="grid gap-4 rounded-3xl bg-gray-100 px-5 py-4 sm:grid-cols-[1fr_110px_140px_90px] sm:items-center dark:bg-gray-800">
-                            <p className="truncate font-semibold">{project.name}</p>
-                            <span className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(project.status)}`}>
-                                {project.status}
-                            </span>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{project.updatedLabel}</p>
-                            <p className="text-sm text-gray-400">{project.isFork ? "Fork" : "Original"}</p>
-                        </div>
-                    ))}
-                    {!isLoading && health.projects.length === 0 && <EmptyState text="No project activity data available" />}
+                    {skeletons}
                 </div>
             </section>
             )
