@@ -1,7 +1,12 @@
 import { surfaceClass } from "~/routes/statpage";
 import SectionHeading from "./SectionHeading";
-import type { calculateDeveloperProfile } from "~/utils/statpage";
+import { calculateDeveloperProfile } from "~/utils/statpage";
 import EmptyState from "./EmptyState";
+import { useMemo, useState } from "react";
+import { dench, HTTPCredentials } from "dench-fetch";
+import type { CommonResponse } from "~/types/common/common";
+import { useQuery } from "@tanstack/react-query";
+import type { DevelopStatsNode, GithubRepoCommonResponse } from "~/types/page/statpage";
 
 export interface WorkingStyleArticleProps{
     developer : ReturnType<typeof calculateDeveloperProfile>,
@@ -11,7 +16,24 @@ export interface WorkingStyleArticleProps{
 
 
 
-export default function WorkingStyleArticle({ developer, isLoading }: WorkingStyleArticleProps){
+export default function WorkingStyleArticle(){
+    
+    const denchInstance = useState(() => dench("http://localhost:3000/api", "workingStyleArticleDench"))[0];
+
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["workingStyleArticleData"],
+        queryFn: async () => {
+            type CommonResponseType<T> = CommonResponse<GithubRepoCommonResponse<T>>;
+            const res = await denchInstance.get<CommonResponseType<DevelopStatsNode>>("repos/developStats").credentials(HTTPCredentials.INCLUDE).toJson();
+            return res.data;
+        },
+        staleTime : 5 * 60 * 1000,
+        gcTime : 10 * 60 * 1000,
+    });
+
+
+    const developer = useMemo(()=> calculateDeveloperProfile(data!), [data]);
+
     return(
             <article className={`${surfaceClass} p-7 md:p-8`}>
                 <SectionHeading eyebrow="Development profile" title="Working style" detail="Inferred from time, stack, and topics" />
