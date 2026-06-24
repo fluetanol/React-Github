@@ -7,9 +7,7 @@ import RepositoryActivitySection from "~/components/page/stat/RepositoryActivity
 import RepositoryCategoriesArticle from "~/components/page/stat/RepositoryCategoriesArticle";
 import StatTitleSection from "~/components/page/stat/StatTitleSection";
 import TechnologyDistributionArticle from "~/components/page/stat/TechnologyDistributionArticle";
-import TechnologyDistribution from "~/components/page/stat/TechnologyDistributionArticle";
 import WeekActivityArticle from "~/components/page/stat/WeekActivityArticle";
-import WeekActivity from "~/components/page/stat/WeekActivityArticle";
 import WorkingStyleArticle from "~/components/page/stat/WorkingStyleArticle";
 import type { CommonResponse } from "~/types/common/common";
 import type { DevelopStatsNode, GithubCommitTimeRepositoryNode, GithubLanguageRepositoryNode, GithubProjectTopicsNode, GithubRepoCommonResponse, ProjectLiveRateNode } from "~/types/page/statpage";
@@ -52,10 +50,13 @@ export default function StatPage(){
                 developStatsAPI,
                 projectLiveRateAPI,
             ])
-         
+            
+    
+            
             return [ res[0].data, res[1].data, res[2].data, res[3].data, res[4].data ] as const;
         },
         staleTime : 5 * 60 * 1000,
+        gcTime : 10 * 60 * 1000,
     })
 
     const analytics = useMemo(() => ({
@@ -84,7 +85,7 @@ export default function StatPage(){
                     <RepositoryCategoriesArticle categories={analytics.categories} isLoading={isLoading} />     
                 </section>
 
-                <RepositoryActivitySection health={analytics.health} isLoading={isLoading} />
+                <RepositoryActivitySection />
             </main>
         </div>
     )
