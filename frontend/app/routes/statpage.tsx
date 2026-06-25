@@ -82,7 +82,7 @@ export default function StatPage(){
                 <section className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
                     <PreferredCommitTimeArticle commits={analytics.commits} />
                     <WorkingStyleArticle />
-                    <RepositoryCategoriesArticle categories={analytics.categories} isLoading={isLoading} />     
+                    <RepositoryCategoriesArticle />     
                 </section>
 
                 <RepositoryActivitySection />
