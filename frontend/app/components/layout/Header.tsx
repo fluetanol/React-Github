@@ -1,24 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
 import { useRef } from "react"
 import { useNavigate } from "react-router"
-import { dench } from "~/dench/denchfetch/dench"
-import { HTTPCredentials } from "~/dench/types/denchEnum"
+import { dench, HTTPCredentials } from "dench-fetch"
 import { Github } from "~/icons/Github"
+import type { CommonResponse } from "~/types/common/common"
+import useErrorCallback from "~/hooks/useErrorCallback"
 
 interface UserDataState{
     login : string,
     avatarUrl : string
 }
 
-export interface CommonResponse<T>{
-    data : T
-}
 
 export default function Header(){
 
     const denchInstance = useRef(dench("http://localhost:3000/api//", "headerDench"));
 
-    const { data, error, isLoading} = useQuery<UserDataState, Error>(
+    const { data, error, isLoading, isError} = useQuery<UserDataState, Error>(
         {
             queryKey: ["headerUserData"], 
             queryFn: async() =>{
@@ -27,18 +25,26 @@ export default function Header(){
                 .error((err)=>{
                     console.error("Failed to fetch user header data:", err);
                 })
-                .boundaryNormalize()
                 .toJson()
                 return res.data;
             },
-            staleTime : 5 * 60 * 1000, //5분
-            
+            staleTime : 5 * 60 * 1000, //5분,
+            retry : (failureCount, error)=>{
+                if(error.message.includes("401")){
+                    // Handle unauthorized error
+                    return false;
+                }
+
+                return failureCount < 3;
+            }
         }
     );
 
-    
-
     const navigate = useNavigate();
+
+    useErrorCallback(isError, ()=>{
+        navigate("/");
+    })
 
 
     return(
@@ -56,7 +62,11 @@ export default function Header(){
                 </div>
 
                 <div className="flex flex-row gap-3 text- font-medium tracking-[0.12em] text-gray-800 dark:text-gray-200">
-                    <button className="hover:text-gray-400 hover:cursor-pointer dark:hover:text-gray-300">Stastics</button>
+                    <button className="hover:text-gray-400 hover:cursor-pointer dark:hover:text-gray-300"
+                        onClick={()=>{
+                            navigate("/statpage");
+                        }}
+                    >Statistics</button>
                     <button className="hover:text-gray-400 hover:cursor-pointer dark:hover:text-gray-300" 
                     onClick={()=>{
                         navigate("/testpage");

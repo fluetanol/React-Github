@@ -3,7 +3,7 @@ import { NavFloatButton } from "../common/NavFloatButton";
 import useRenderingTimer from "~/hooks/dev/useRenderingTimer";
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Header from "../common/Header";
+import Header from "./Header";
 
 
 

@@ -1,11 +1,10 @@
 import type { GithubRepositoryResponse, GithubUser } from "~/types/GithubInfo"
-import RepositoryList from "../RepositoryList"
+import RepositoryList from "./RepositoryList"
 import SideProfile from "./SideProfile"
 import StatCard from "./StatCard"
 import useFetchAll from "~/hooks/useFetchAll"
-import { Loading } from "../common/Loading"
+import { Loading } from "../../common/Loading"
 import { useNavigate } from "react-router"
-import useErrorCallback from "~/hooks/useErrorCallback"
 
 export interface DashboardSectionProps { 
     userDataState : GithubUser,
@@ -24,9 +23,9 @@ export default function DashboardSection({ userDataState, loading }: DashboardSe
     , 5 * 60 * 1000, "api/users/repos")
     
 
-    useErrorCallback(isError, ()=>{
-        navigate("/");
-    })
+    // useErrorCallback(isError, ()=>{
+    //     navigate("/");
+    // })
 
 
     if (isLoading || userDataState === null) {

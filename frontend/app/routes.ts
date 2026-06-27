@@ -7,6 +7,7 @@ export default [
     layout("components/layout/DashboardLayout.tsx", [
         route("dashboard", "routes/dashboard.tsx"),
         route("testpage", "routes/testpage.tsx"),
+        route("statpage", "routes/statpage.tsx")
     ]),
     //route("testpage", "routes/testpage.tsx"),
 

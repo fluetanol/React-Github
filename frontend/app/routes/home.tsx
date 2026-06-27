@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import type { Route } from "./+types/home";
 import { Github } from "~/icons/Github";
 import type { StrictGithubOAuthParams } from "~/types/GithubOAuth";
-import MovingStrip from "~/components/home/MovingStrip";
+import MovingStrip from "~/components/page/home/MovingStrip";
 import useAuthCheck from "~/hooks/useAuthCheck";
 
 export function meta({}: Route.MetaArgs) {
@@ -44,7 +44,18 @@ export default function Home() {
     }
   },[loginCheckState, navigate])
  
+  console.log("Login Check State:", loginCheckState);
 
+  if(loginCheckState === null){
+    // login 체크를 일단 수행한 뒤, 안된다면 메인을 띄우고 되었다면 대시보드로 리다이렉션 시킨다
+    return null;
+  }
+
+  if(loginCheckState === true){
+    return(
+        <div className="w-screen h-screen bg-gray-300"></div>
+    )
+  }
 
   return (
 

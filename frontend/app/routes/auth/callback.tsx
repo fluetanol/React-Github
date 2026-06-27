@@ -1,16 +1,20 @@
-import  {useEffect} from 'react'
+import  {useEffect, useRef} from 'react'
 import {useSearchParams, useNavigate} from 'react-router';
 
 export default function Callback() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    
+    const didRun = useRef(false);
+
     // Github OAuth가 리다이렉트 될 때는 URL "code"쿼리 파라미터로 
     // 인증 코드가 전달됨
     const code = searchParams.get('code');
     console.log("Received code:", code);
 
     useEffect(()=>{
+        if(didRun.current) return;
+        didRun.current = true;
+
         const authenticate = async()=>{
             // error
             if(!code){
@@ -37,17 +41,15 @@ export default function Callback() {
                     // const { token } = data;
                     // localStorage.setItem('github_token', token);
                     console.log("인증 성공", data);
-                    navigate('/dashboard');
+                    navigate('/dashboard', {replace : true});
                 }
                 else{
-                    console.error("인증 실패", response.statusText);
-                    alert("로그인에 실패했습니다.");
-                    navigate('/');
+                    throw new Error(`인증 실패: ${response.statusText}`);
                 }
             }
             catch(error){
                 console.error("인증 실패", error);
-                alert("로그인에 실패했습니다.");
+                alert("로그인에 실패했습니다 :" + error);
                 navigate('/');
             }
         }

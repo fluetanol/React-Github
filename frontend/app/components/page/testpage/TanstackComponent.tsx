@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {useRef} from "react";
-import { dench, DenchInstancePreset } from "~/dench/denchfetch/dench";
-import { HTTPCredentials } from "~/dench/types/denchEnum";
+import { dench } from "dench-fetch";
+import { HTTPCredentials } from "dench-fetch";
 import useRegistLoading from "~/hooks/dev/useRegistLoading";
 import type { TestResponse } from "~/routes/testpage";
 
@@ -18,29 +18,6 @@ interface UseTanstackDenchResult<T>{
     error : Error | null;
     isLoading : boolean;
 }
-
-
-function useTanstackDench<T>(options : UseTanstackDenchOptions) : UseTanstackDenchResult<T> {
-    
-    const denchInstance = useRef(dench(options.url, options.label));
-
-    const { data, error, isLoading } = useQuery<T>({
-        queryKey: [options.queryKey],
-        queryFn: async () => {
-            const dench = denchInstance.current;
-            const response = await dench.get<T>(options.api)
-                .credentials(HTTPCredentials.INCLUDE)
-                .toJson();
-            return response;
-        },
-        staleTime: 1000 * 60, // 1 minute
-    });        
-
-    return { data, error, isLoading };
-
-}
-
-
 
 
 export default function TanstackComponent(){

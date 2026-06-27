@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {useRef} from "react";
-import { dench } from "~/dench/denchfetch/dench";
-import { HTTPCredentials } from "~/dench/types/denchEnum";
+import { dench } from "dench-fetch";
+import { HTTPCredentials }  from "dench-fetch";
 import useRegistLoading from "~/hooks/dev/useRegistLoading";
 import type { TestResponse } from "~/routes/testpage";
 

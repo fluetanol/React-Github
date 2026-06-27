@@ -1,5 +1,5 @@
 import type { GithubRepositoryResponse } from "~/types/GithubInfo";
-import RepositoryDashboardCard from "./dashboard/DashboardRepositoryCard";
+import RepositoryDashboardCard from "./DashboardRepositoryCard";
 
 
 export default function RepositoryList({githubDataState, isLoading, isError: _isError} : {githubDataState : GithubRepositoryResponse, isLoading : boolean, isError : boolean}){

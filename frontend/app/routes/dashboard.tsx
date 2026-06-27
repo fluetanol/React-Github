@@ -1,14 +1,13 @@
 import { useNavigate } from "react-router";
 import { Loading } from "~/components/common/Loading";
-import Header, { type CommonResponse } from "~/components/common/Header";
-import DashboardSection from "~/components/dashboard/DashboardSection";
-import useGithubUser from "~/hooks/useUser";
+import DashboardSection from "~/components/page/dashboard/DashboardSection";
 import useErrorCallback from "~/hooks/useErrorCallback";
 import { useQuery } from "@tanstack/react-query";
-import { dench } from "~/dench/denchfetch/dench";
+import { dench } from "dench-fetch";
 import { useRef } from "react";
-import { HTTPCredentials } from "~/dench/types/denchEnum";
+import { HTTPCredentials } from "dench-fetch";
 import type { GithubUser } from "~/types/GithubInfo";
+import type { CommonResponse } from "~/types/common/common";
 
 
 
@@ -38,6 +37,13 @@ export default function Dashboard(){
         },
         staleTime : 1 * 60 * 1000, //1분
         gcTime : 5 * 60 * 1000, //5분
+        retry : (failureCount, error)=>{
+            if(error.message.includes("401")){
+                // Handle unauthorized error
+                return false;
+            }
+            return failureCount < 3;
+        }
     })
 
 
